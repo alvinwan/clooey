@@ -7,6 +7,11 @@ import sys
 import os
 from io import StringIO 
 import sys
+from pathlib import Path
+
+
+DIRECTORY = Path(os.path.dirname(os.path.realpath(__file__)))
+DEFAULT_PROGRAM = DIRECTORY / 'examples' / 'sample.py'
 
 
 class InputCallVisitor(ast.NodeVisitor):
@@ -83,7 +88,7 @@ def maybe_get_program(program):
     return program
 
 
-def cli(program):
+def cli(*, program=DEFAULT_PROGRAM):
     """Run a CLI for clooey that shows the results in stdout."""
     program = maybe_get_program(program)
 
@@ -109,7 +114,7 @@ class Capturing(list):
         sys.stdout = self._stdout
 
 
-def web(program):
+def web(*, program=DEFAULT_PROGRAM):
     """Launch a small web app for clooey for web interactions"""
     from flask import Flask, request
 
@@ -148,6 +153,10 @@ def web(program):
     app.run()
 
 
-if __name__ == '__main__':
+def main():
     from clize import run
     run([cli, web])
+
+
+if __name__ == '__main__':
+    main()

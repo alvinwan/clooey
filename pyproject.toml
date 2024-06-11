@@ -23,3 +23,6 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/alvinwan/clooey"
+
+[project.scripts]
+clooey = "clooey.main:main"
