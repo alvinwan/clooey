@@ -10,7 +10,18 @@ Start by installing clooey using pip.
 pip install clooey
 ```
 
-You can then use the API to convert a script into a form.
+Here's a sample Python script that has `input` calls.
+
+```python
+name = input("Enter your name: ")
+age = int(input("Enter your age: "))
+city = input("Enter your city: ")
+
+print(f"Welcome to {city}, {name} ({age})!")
+```
+
+clooey can convert this Python script into a form, based on its calls to
+`input`.
 
 ```python
 import clooey
