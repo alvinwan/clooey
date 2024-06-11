@@ -66,4 +66,4 @@ def execute(responses, program):
         except StopIteration:
             raise RuntimeError("Not enough inputs provided")
 
-    exec(program, {}, {'input': custom_input})
+    exec(program, {'input': custom_input})
