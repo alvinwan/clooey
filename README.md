@@ -43,7 +43,7 @@ You can optionally provide your own script to parse. For example,
 
 ```bash
 wget https://github.com/alvinwan/clooey/blob/main/clooey/examples/password.py
-clooey web password.py
+clooey web --program password.py
 ```
 
 ## CLI Demo
@@ -91,5 +91,5 @@ You can optionally provide your own script to parse. For example,
 
 ```bash
 wget https://github.com/alvinwan/clooey/blob/main/clooey/examples/piglatin.py
-clooey cli piglatin.py
+clooey cli --program piglatin.py
 ```
