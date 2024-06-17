@@ -1,7 +1,7 @@
 # clooey
 
 Python Command Line Interface (CLI) to an HTML form. For a Javascript API that 
-does not depend on a Python runtime to *generate* the form, see the `client/`
+does not depend on a Python runtime to *generate* the form, see the `js/`
 directory in this repository.
 
 ## Getting Started
