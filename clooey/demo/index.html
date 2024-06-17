@@ -1,0 +1,45 @@
+<html>
+    <title>Demo for clooey.js</title>
+    <head>
+        <script src="https://mozilla.github.io/nunjucks/files/nunjucks.min.js"></script>
+        <script src="https://alvinwan.com/clooey/demo/clooey.js"></script>
+    </head>
+    <body>
+        <div id="clooey"></div>
+        <div id="output"></div>
+    </body>
+    <script>
+        const output = document.getElementById('output');
+        const pythonCode = `
+name = input("Enter your name: ")
+age = input("Enter your age: ")
+city = input("Enter your city: ")
+f"{name} ({age}) lives in {city}!"`;
+
+        // Load pyodide asynchronously.
+        async function loadGlobalPyodide() {
+            output.innerHTML = 'Loading Python runtime...'
+            const { loadPyodide } = await import("https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.mjs");
+            window.pyodide = await loadPyodide();
+            output.innerHTML = `Pyodide ${pyodide.version} loaded!`;
+        }
+        loadGlobalPyodide();
+
+        // Instantiate form first
+        var cli = parse(pythonCode);
+        var html = generate(cli);
+
+        const container = document.getElementById('clooey');
+        container.innerHTML = html;
+
+        // Intercept form submission
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            var responses = getResponsesFromForm(this);
+            var response = await execute(responses, pythonCode, window.pyodide);
+
+            output.innerHTML = response;
+        });
+    </script>
+</html>
