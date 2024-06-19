@@ -1,8 +1,9 @@
 # clooey
 
-Python Command Line Interface (CLI) to an HTML form. For a Javascript API that 
-does not depend on a Python runtime to *generate* the form, see the `js/`
-directory in this repository.
+Python Command Line Interface (CLI) to an HTML form.
+
+> For a Javascript API that does not depend on a Python runtime to
+> *generate* the form, see the `js/` directory in this repository.
 
 ## Getting Started
 
@@ -32,10 +33,15 @@ cli = clooey.parse('sample.py')
 html = clooey.generate(cli, clooey.TEMPLATE_FORM)
 ```
 
+If you stick this HTML into a file and open it in a browser, you'll see a form
+like the following.
+
 > **Want to customize the form HTML?** All templates are
 > [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/) formatted. By default,
 > the form template is provided with one `inputs` list of strings, which are the
 > prompts provided to `input` function calls.
+
+<img alt="Screenshot 2024-06-10 at 9 40 48 PM" src="https://github.com/alvinwan/clooey/assets/2068077/5bc66be5-ef4f-47ba-8280-68c6c975d521">
 
 # Web Demo
 
