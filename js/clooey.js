@@ -1,3 +1,18 @@
+class CLI {
+    constructor(inputs, title = '', description = '') {
+        this.inputs = inputs;
+        this.title = title;
+        this.description = description;
+    }
+}
+
+class Input {
+    constructor(label, placeholder = '') {
+        this.label = label;
+        this.placeholder = placeholder;
+    }
+}
+
 /**
  * Converts a piece of Python source code into a list of prompts. Assumes that
  * all calls to the input function contain only a string as an argument. No
@@ -12,17 +27,70 @@ function parse(pythonCode) {
     const prompts = [];
 
     while ((matches = inputPromptRegex.exec(pythonCode)) !== null) {
-        prompts.push(matches[1]);
+        prompts.push(parsePrompt(matches[1]));
     }
 
-    return prompts;
+    const docComment = pythonCode.match(/(?:\"\"\"|\'\'\')([\s\S]*?)(?:\"\"\"|\'\'\')/);
+    let title = '', description = '';
+    
+    if (docComment) {
+        const docs = docComment[1].trim().split('\n');
+        title = docs[0].trim();
+        description = docs.slice(1).join('\n').trim();
+    }
+
+    return new CLI(prompts, title, description);
+}
+
+/**
+ * Parse the prompt into a label and placeholder.
+ * 
+ * @param {*} prompt - raw string prompt
+ * @returns - Input object
+ * 
+ * Examples:
+ * 
+ * console.log(parsePrompt("Your city [Seattle]:"));
+ * console.log(parsePrompt("Your city: [Seattle]"));
+ * console.log(parsePrompt("Your city \\[Seattle\\]:"));
+ * console.log(parsePrompt("Your city \\[Seattle\\]: [Placeholder]"));
+ * 
+ * should give the following outputs
+ * 
+ * Input {label: 'Your city :', placeholder: 'Seattle'}
+ * Input {label: 'Your city:', placeholder: 'Seattle'}
+ * Input {label: 'Your city [Seattle]:', placeholder: ''}
+ * Input {label: 'Your city [Seattle]:', placeholder: 'Placeholder'}
+ */
+function parsePrompt(prompt) {
+    // Define the pattern to match the input string
+    const pattern = /^(.*?)(?<!\\)\[(.*?)(?<!\\)\](.*)?$/;
+    const match = prompt.match(pattern);
+    
+    let label, placeholder;
+    
+    if (match) {
+        var suffix = match[3] ? match[3] : '';
+        label = (match[1] + suffix).trim();
+        placeholder = match[2].trim();
+    } else {
+        label = prompt;
+        placeholder = '';
+    }
+
+    // Replace escaped square brackets with actual square brackets
+    label = label.replace('\\[', '[').replace('\\]', ']');
+    
+    return new Input(label, placeholder);
 }
 
 TEMPLATE_FORM = `
+{% if cli.title %}<h1>{{ cli.title }}</h1>{% endif %}
+{% if cli.description %}<p>{{ cli.description }}</p>{% endif %}
 <form method="post">
-    {% for input in inputs %}
-    <label>{{ input }}</label>
-    <input type="text" name="{{ loop.index }}">
+    {% for input in cli.inputs %}
+    <label>{{ input.label }}</label>
+    <input type="text" name="{{ loop.index }}" placeholder="{{ input.placeholder }}">
     {% endfor %}
     <input type="submit" value="submit">
 </form>
@@ -42,7 +110,7 @@ TEMPLATE_FORM = `
  */
 function generate(cli, template) {
     template = template || TEMPLATE_FORM;
-    return nunjucks.renderString(template, { inputs: cli });
+    return nunjucks.renderString(template, { cli });
 }
 
 /**

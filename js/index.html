@@ -2,7 +2,7 @@
     <title>Demo for clooey.js</title>
     <head>
         <script src="https://mozilla.github.io/nunjucks/files/nunjucks.min.js"></script>
-        <script src="https://alvinwan.com/clooey/js/clooey.js"></script>
+        <script src="clooey.js"></script>
     </head>
     <body>
         <div id="clooey"></div>
@@ -11,10 +11,16 @@
     <script>
         const output = document.getElementById('output');
         const pythonCode = `
+"""Tell me about you
+
+A simple hello world application to greet you!
+"""
+
 name = input("Enter your name: ")
-age = input("Enter your age: ")
-city = input("Enter your city: ")
-f"{name} ({age}) lives in {city}!"`;
+age = int(input("Enter your age: "))
+city = input("Enter your city [Seattle]: ") or 'Seattle'
+
+f"Welcome to {city}, {name} ({age})!"`;
 
         // Load pyodide asynchronously.
         async function loadGlobalPyodide() {
