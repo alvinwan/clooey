@@ -28,11 +28,11 @@ def cli(*, program=DEFAULT_PROGRAM):
     program = maybe_get_program(program)
 
     # Parse the program and print the web form
-    prompts = clooey.parse(program)
-    print(clooey.generate(prompts, clooey.TEMPLATE_FORM))
+    cli = clooey.parse(program)
+    print(clooey.generate(cli, clooey.TEMPLATE_FORM))
 
     # Grab the user's actual responses
-    responses = [input(prompt) for prompt in prompts]
+    responses = [input(_input.label) for _input in cli.inputs]
 
     # Execute program with the user's responses
     clooey.execute(responses, program)
