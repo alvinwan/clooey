@@ -17,8 +17,67 @@ Here's a sample Python script that has `input` calls.
 
 ```python
 name = input("Enter your name: ")
-age = int(input("Enter your age: "))
 city = input("Enter your city: ")
+
+print(f"Welcome to {city}, {name}!")
+```
+
+clooey can convert this Python script into a form, based on its calls to
+`input`.
+
+```python
+import clooey
+
+TEMPLATE_FORM = """
+<form method="post">
+{% for input in cli.inputs %}
+    <label>{{ input.label }}</label>
+    <input type="text" name="{{ loop.index }}">
+{% endfor %}
+    <input type="submit" value="submit">
+</form>
+"""
+
+cli = clooey.parse('sample.py')
+html = clooey.generate(cli, TEMPLATE_FORM)
+print(html)
+```
+
+Running the above conversion script gives the following HTML output.
+
+```html
+<form method="post">
+    
+    <label>Enter your name: </label>
+    <input type="text" name="1">
+    
+    <label>Enter your city: </label>
+    <input type="text" name="2">
+    
+    <input type="submit" value="submit">
+</form>
+```
+
+# Advanced
+
+There are several more features that clooey supports:
+- Each prompt can contain a `[placeholder]` value, delimited by square brackets,
+    that will be used as the placeholder text in the form.
+- You can provide a title and description for the form. The title is the first
+    non-whitespace line of the docstring, and the description is the rest of the
+    docstring.
+
+Here's a sample Python script that has `input` calls.
+
+```python
+"""Tell me about you
+
+A simple hello world application to greet you!
+"""
+
+name = input("Enter your name: ")
+age = int(input("Enter your age: "))
+city = input("Enter your city [Seattle]: ") or 'Seattle'
 
 print(f"Welcome to {city}, {name} ({age})!")
 ```
@@ -29,19 +88,50 @@ clooey can convert this Python script into a form, based on its calls to
 ```python
 import clooey
 
+TEMPLATE_FORM = """
+{% if cli.title %}<h1>{{ cli.title }}</h1>{% endif %}
+{% if cli.description %}<p>{{ cli.description }}</p>{% endif %}
+<form method="post">
+    {% for input in cli.inputs %}
+    <label>{{ input.label }}</label>
+    <input type="text" name="{{ loop.index }}" placeholder="{{ input.placeholder }}">
+    {% endfor %}
+    <input type="submit" value="submit">
+</form>
+"""
+
 cli = clooey.parse('sample.py')
-html = clooey.generate(cli, clooey.TEMPLATE_FORM)
+html = clooey.generate(cli, TEMPLATE_FORM)
+print(html)
 ```
 
-If you stick this HTML into a file and open it in a browser, you'll see a form
-like the following.
+Notice that the HTML template is
+[Jinja2](https://jinja.palletsprojects.com/en/3.1.x/) formatted. You can
+customize this HTML as you see fit, as long as the there are input fields
+with the names `1`, `2`, `3`, etc. The above script gives us this output.
 
-> **Want to customize the form HTML?** All templates are
-> [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/) formatted. By default,
-> the form template is provided with one `inputs` list of strings, which are the
-> prompts provided to `input` function calls.
+```html
+<h1>Tell me about you</h1>
+<p>A simple hello world application to greet you!</p>
+<form method="post">
+    
+    <label>Enter your name: </label>
+    <input type="text" name="1" placeholder="">
+    
+    <label>Enter your age: </label>
+    <input type="text" name="2" placeholder="">
+    
+    <label>Enter your city:</label>
+    <input type="text" name="3" placeholder="Seattle">
+    
+    <input type="submit" value="submit">
+</form>
+```
 
-<img alt="Screenshot 2024-06-10 at 9 40 48 PM" src="https://github.com/alvinwan/clooey/assets/2068077/5bc66be5-ef4f-47ba-8280-68c6c975d521">
+If you save this HTML in a file and open the file in a browser, you'll then see
+the following:
+
+<img width="952" alt="Screenshot 2024-06-19 at 12 42 36 AM" src="https://github.com/alvinwan/clooey/assets/2068077/9935a978-0989-4701-8f18-27b3ace61422">
 
 # Web Demo
 
